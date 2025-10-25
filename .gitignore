@@ -39,3 +39,6 @@ npm-debug.log
 *.db
 *.db-*
 
+# Work in progress documentation
+/wip/
+
