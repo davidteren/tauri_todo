@@ -1,0 +1,44 @@
+[ ] NAME:Current Task List DESCRIPTION:Root task for conversation __NEW_AGENT__
+-[/] NAME:Bootstrap Phoenix + Tauri Desktop Application DESCRIPTION:Complete setup of TodoErr desktop application following all documented best practices and constraints
+--[x] NAME:Phase 1: Phoenix Project Initialization DESCRIPTION:Create and configure the Phoenix application with LiveView, SQLite, and desktop-specific settings
+---[x] NAME:Create Phoenix project with minimal options DESCRIPTION:Run: mix phx.new todo_err --no-html --no-mailer --no-gettext --no-live --database sqlite3
+---[x] NAME:Add required dependencies to mix.exs DESCRIPTION:Add phoenix_live_view ~> 0.20, ecto_sqlite3 ~> 0.22, tailwind, esbuild, and other required deps
+---[x] NAME:Configure endpoint for desktop (localhost binding, dynamic port) DESCRIPTION:Update config/runtime.exs to bind to 127.0.0.1, use port 0 in prod, configure for local-only access
+---[x] NAME:Configure SQLite with dynamic database path DESCRIPTION:Set up DATABASE_PATH environment variable support, configure pool_size: 5
+---[x] NAME:Set up Tailwind CSS with Catalyst UI Kit DESCRIPTION:Configure Tailwind to use components from /Users/davidteren/Projects/Tailwind/catalyst-ui-kit/javascript
+---[x] NAME:Configure LiveView and router DESCRIPTION:Set up LiveView socket, create router with single root LiveView route
+---[x] NAME:Implement automatic migrations on startup DESCRIPTION:Add migration logic to Application.start/2 to run Ecto.Migrator.run on boot
+--[/] NAME:Phase 2: Database and Context Setup DESCRIPTION:Configure SQLite, create schema, migrations, and Todos context module
+---[ ] NAME:Create Todo schema DESCRIPTION:Create lib/todo_err/todos/todo.ex with fields: description (string), completed (boolean, default false), timestamps
+---[ ] NAME:Create todos table migration DESCRIPTION:Generate and implement migration for todos table with proper indexes
+---[ ] NAME:Create Todos context module DESCRIPTION:Implement TodoErr.Todos context with list_todos/0, create_todo/1, toggle_complete/1, delete_todo/1 functions
+---[ ] NAME:Implement proper error handling in context DESCRIPTION:Ensure all context functions return {:ok, result} | {:error, changeset} patterns
+---[ ] NAME:Add changeset validations DESCRIPTION:Implement validate_required, validate_length for description field in Todo schema
+--[ ] NAME:Phase 3: LiveView Implementation DESCRIPTION:Build the TodoLive LiveView with all CRUD operations and UI components
+---[ ] NAME:Create TodoLive LiveView module DESCRIPTION:Create lib/todo_err_web/live/todo_live.ex with mount/3 and render/1 functions
+---[ ] NAME:Implement mount function with todos loading DESCRIPTION:Load all todos using Todos.list_todos/0 in mount, assign to socket
+---[ ] NAME:Create HEEx template with Catalyst UI components DESCRIPTION:Build todo_live.html.heex with header, input form, and todo list using Tailwind/Catalyst components
+---[ ] NAME:Implement add_todo event handler DESCRIPTION:Create handle_event for add_todo with proper error handling and flash messages
+---[ ] NAME:Implement toggle_complete event handler DESCRIPTION:Create handle_event for toggle_complete with proper error handling
+---[ ] NAME:Implement delete_todo event handler DESCRIPTION:Create handle_event for delete_todo with proper error handling
+---[ ] NAME:Add form validation and user feedback DESCRIPTION:Implement client-side validation, loading states, and proper flash messages
+---[ ] NAME:Style with Tailwind for polished UI DESCRIPTION:Apply Tailwind classes for responsive, modern design with hover effects and transitions
+--[ ] NAME:Phase 4: Tauri Integration DESCRIPTION:Initialize Tauri, configure for Phoenix integration, and implement launcher logic
+---[ ] NAME:Initialize Tauri project DESCRIPTION:Run: npm install -g @tauri-apps/cli && tauri init in project root
+---[ ] NAME:Configure tauri.conf.json for Phoenix integration DESCRIPTION:Set devPath to http://127.0.0.1:4000, configure beforeDevCommand and beforeBuildCommand
+---[ ] NAME:Configure externalBin for Elixir release DESCRIPTION:Add Elixir release binary path to externalBin in tauri.conf.json
+---[ ] NAME:Implement Rust launcher logic DESCRIPTION:Create Rust code to launch Elixir binary, discover dynamic port, set DATABASE_PATH env var
+---[ ] NAME:Implement port discovery mechanism DESCRIPTION:Parse Elixir stdout to get dynamic port number before navigating webview
+---[ ] NAME:Configure CSP and security headers DESCRIPTION:Set strict Content Security Policy allowing only localhost connections
+---[ ] NAME:Set up database path for macOS DESCRIPTION:Configure DATABASE_PATH to ~/Library/Application Support/TodoErr/todo_err.db
+--[ ] NAME:Phase 5: Build and Testing DESCRIPTION:Create release build, test bundled application, and verify all features
+---[ ] NAME:Create production Elixir release DESCRIPTION:Run: MIX_ENV=prod mix do assets.deploy, release
+---[ ] NAME:Build Tauri application bundle DESCRIPTION:Run: tauri build to create .app and .dmg for macOS
+---[ ] NAME:Test F-01: View All Todos DESCRIPTION:Verify todos display correctly, sorted by completion status and creation date
+---[ ] NAME:Test F-02: Add New Todo DESCRIPTION:Verify adding todos via button and Enter key, instant UI update
+---[ ] NAME:Test F-03/F-04: Toggle Complete/Incomplete DESCRIPTION:Verify marking todos complete/incomplete with visual feedback and re-sorting
+---[ ] NAME:Test F-05: Delete Todo DESCRIPTION:Verify deleting todos removes them from UI and database
+---[ ] NAME:Test F-06: Data Persistence DESCRIPTION:Verify todos persist after closing and reopening the application
+---[ ] NAME:Verify database location DESCRIPTION:Confirm todo_err.db is created in ~/Library/Application Support/TodoErr/
+---[ ] NAME:Test automatic migrations DESCRIPTION:Verify migrations run automatically on first launch and after updates
+---[ ] NAME:Performance and UX testing DESCRIPTION:Test app startup time, responsiveness, and overall user experience
