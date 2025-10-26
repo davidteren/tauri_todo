@@ -64,7 +64,8 @@ defmodule TodoErr.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -89,6 +90,7 @@ defmodule TodoErr.MixProject do
       ],
       precommit: [
         "format --check-formatted",
+        "credo --strict",
         "compile --warnings-as-errors",
         "test"
       ]
