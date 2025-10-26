@@ -1,0 +1,50 @@
+#!/bin/bash
+set -e
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# In production (bundled app), the release is in the resources directory
+# In development, it's in the _build directory
+# Note: In Tauri apps, the sidecar is placed in Contents/MacOS/
+if [ -d "$SCRIPT_DIR/../_build/prod/rel/todo_err" ]; then
+    # Development path (from project root/scripts)
+    RELEASE_DIR="$SCRIPT_DIR/../_build/prod/rel/todo_err"
+elif [ -d "$SCRIPT_DIR/../Resources/todo_err" ]; then
+    # macOS app bundle path - sidecar is in MacOS, release in Resources
+    # (MacOS/todo_err_launcher -> ../Resources/todo_err)
+    RELEASE_DIR="$SCRIPT_DIR/../Resources/todo_err"
+elif [ -d "$SCRIPT_DIR/../../Resources/todo_err" ]; then
+    # Alternative macOS app bundle path
+    RELEASE_DIR="$SCRIPT_DIR/../../Resources/todo_err"
+elif [ -d "$SCRIPT_DIR/../../Resources/_build/prod/rel/todo_err" ]; then
+    # macOS app bundle path - full path structure
+    RELEASE_DIR="$SCRIPT_DIR/../../Resources/_build/prod/rel/todo_err"
+elif [ -d "$SCRIPT_DIR/../todo_err" ]; then
+    # Alternative bundle path (Resources sibling)
+    RELEASE_DIR="$SCRIPT_DIR/../todo_err"
+else
+    echo "ERROR: Could not find Elixir release directory" >&2
+    echo "Script location: $SCRIPT_DIR" >&2
+    echo "Searched in:" >&2
+    echo "  - $SCRIPT_DIR/../_build/prod/rel/todo_err" >&2
+    echo "  - $SCRIPT_DIR/../Resources/todo_err" >&2
+    echo "  - $SCRIPT_DIR/../../Resources/todo_err" >&2
+    echo "  - $SCRIPT_DIR/../../Resources/_build/prod/rel/todo_err" >&2
+    echo "  - $SCRIPT_DIR/../todo_err" >&2
+    exit 1
+fi
+
+# Export the release directory for the Elixir script
+export RELEASE_ROOT="$RELEASE_DIR"
+# Don't set RELEASE_NODE to avoid distributed Erlang issues
+unset RELEASE_NODE
+unset RELEASE_DISTRIBUTION
+
+# Print the discovered directory for debugging
+echo "Starting Phoenix server from: $RELEASE_DIR" >&2
+
+# Start the release without daemonizing
+# We use 'start' which will run the application
+# The PHX_SERVER=true environment variable ensures the endpoint starts
+exec "$RELEASE_DIR/bin/todo_err" start

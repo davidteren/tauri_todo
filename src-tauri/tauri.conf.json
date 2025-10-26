@@ -2,12 +2,12 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "TodoErr",
   "version": "0.1.0",
-  "identifier": "com.todoerr.app",
+  "identifier": "com.todoerr.desktop",
   "build": {
     "frontendDist": "../priv/static",
     "devUrl": "http://localhost:4000",
     "beforeDevCommand": "mix phx.server",
-    "beforeBuildCommand": "MIX_ENV=prod mix do assets.deploy, release"
+    "beforeBuildCommand": "MIX_ENV=prod mix do assets.deploy + release"
   },
   "app": {
     "windows": [
@@ -39,7 +39,10 @@
       "icons/icon.ico"
     ],
     "externalBin": [
-      "bin/todo_err"
+      "../scripts/todo_err_launcher"
+    ],
+    "resources": [
+      "../_build/prod/rel/todo_err"
     ]
   }
 }
