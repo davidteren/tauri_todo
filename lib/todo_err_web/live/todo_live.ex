@@ -177,7 +177,7 @@ defmodule TodoErrWeb.TodoLive do
     
     ~H"""
     <div class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200">
-      <div class="flex items-center gap-4 p-5">
+      <div class="flex items-center gap-2 sm:gap-3 p-5">
         <!-- Checkbox -->
         <button
           phx-click="toggle_complete"
