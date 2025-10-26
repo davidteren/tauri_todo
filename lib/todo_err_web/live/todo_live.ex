@@ -19,8 +19,13 @@ defmodule TodoErrWeb.TodoLive do
 
   @impl true
   def handle_event("add_todo", %{"description" => description}, socket) do
-    # Trim leading and trailing whitespace but preserve internal newlines
-    trimmed_description = String.trim(description)
+    # Trim each line individually while preserving newlines
+    trimmed_description = 
+      description
+      |> String.split("\n")
+      |> Enum.map(&String.trim/1)
+      |> Enum.join("\n")
+      |> String.trim()
     
     case Todos.create_todo(%{description: trimmed_description}) do
       {:ok, _todo} ->
@@ -116,8 +121,16 @@ defmodule TodoErrWeb.TodoLive do
   @impl true
   def handle_event("save_edit", %{"id" => id, "description" => description}, socket) do
     todo = Todos.get_todo!(id)
+    
+    # Trim each line individually while preserving newlines
+    trimmed_description = 
+      description
+      |> String.split("\n")
+      |> Enum.map(&String.trim/1)
+      |> Enum.join("\n")
+      |> String.trim()
 
-    case Todos.update_todo(todo, %{description: description}) do
+    case Todos.update_todo(todo, %{description: trimmed_description}) do
       {:ok, _todo} ->
         socket =
           socket
