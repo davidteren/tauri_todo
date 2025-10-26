@@ -2,13 +2,19 @@
 
 A beautiful, modern task management application built with Phoenix LiveView and packaged as a desktop app using Tauri.
 
+> **Note:** Currently supports **macOS only** (Apple Silicon & Intel). Windows and Linux support coming soon.
+
+<!-- Screenshot placeholder - add your screenshot here -->
+<!-- ![TodoErr App Screenshot](docs/screenshot.png) -->
+
 ## Features
 
 - ✅ Add, complete, and delete tasks
 - ✅ Real-time updates with Phoenix LiveView
 - ✅ Modern glassmorphic UI with cyan/teal color scheme
 - ✅ SQLite database for local storage
-- ✅ Desktop app for macOS (via Tauri)
+- ✅ Native desktop app for macOS (via Tauri v2)
+- ✅ Offline-first architecture
 
 ## Development
 
@@ -75,8 +81,58 @@ todo_err/
 └── scripts/               # Build and deployment scripts
 ```
 
+## Platform Support
+
+| Platform | Status | Architecture |
+|----------|--------|--------------|
+| macOS    | ✅ Supported | Apple Silicon (M1/M2/M3) & Intel |
+| Windows  | 🚧 Coming Soon | - |
+| Linux    | 🚧 Coming Soon | - |
+
+## Documentation
+
+- [Cache Busting Strategy](CACHE_BUSTING.md) - How we handle caching and ensure fresh builds
+- [AI Agent Guidelines](AGENTS.md) - Development guidelines for AI assistants
+
+## Troubleshooting
+
+### Build Issues
+
+If you encounter build issues:
+
+1. **Try a full clean build:**
+   ```bash
+   ./scripts/build_and_run.sh
+   ```
+
+2. **If Erlang node conflicts occur:**
+   ```bash
+   killall -9 beam.smp epmd
+   epmd -kill
+   ```
+
+3. **Clear all caches manually:**
+   ```bash
+   rm -rf _build/prod
+   rm -rf priv/static/assets
+   rm -rf src-tauri/target
+   cd src-tauri && cargo clean && cd ..
+   ```
+
+### App Won't Start
+
+Check the logs:
+```bash
+tail -f ~/Library/Logs/com.todoerr.desktop/TodoErr.log
+```
+
 ## Learn More
 
-* Phoenix: https://www.phoenixframework.org/
-* Tauri: https://tauri.app/
-* Tailwind CSS: https://tailwindcss.com/
+- **Phoenix Framework:** https://www.phoenixframework.org/
+- **Tauri:** https://tauri.app/
+- **Tailwind CSS:** https://tailwindcss.com/
+- **Phoenix LiveView:** https://hexdocs.pm/phoenix_live_view/
+
+## License
+
+This project is open source and available under the MIT License.
