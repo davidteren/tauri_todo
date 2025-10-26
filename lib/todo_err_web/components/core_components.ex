@@ -7,14 +7,16 @@ defmodule TodoErrWeb.CoreComponents do
   alias Phoenix.LiveView.JS
 
   @doc """
-  Renders a button.
+  Renders a button with Radiant-inspired styling.
 
   ## Examples
 
       <.button>Send!</.button>
-      <.button phx-click="go" class="ml-2">Send!</.button>
+      <.button variant="secondary" phx-click="go">Send!</.button>
+      <.button variant="outline" class="ml-2">Send!</.button>
   """
   attr :type, :string, default: nil
+  attr :variant, :string, default: "primary", values: ~w(primary secondary outline)
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
@@ -25,9 +27,8 @@ defmodule TodoErrWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-indigo-600 hover:bg-indigo-700",
-        "py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80",
-        "transition-colors duration-200",
+        button_variant(@variant),
+        "phx-submit-loading:opacity-75",
         @class
       ]}
       {@rest}
@@ -35,6 +36,37 @@ defmodule TodoErrWeb.CoreComponents do
       <%= render_slot(@inner_block) %>
     </button>
     """
+  end
+
+  defp button_variant("primary") do
+    [
+      "inline-flex items-center justify-center px-4 py-2",
+      "rounded-full border border-transparent bg-gray-950 shadow-md",
+      "text-base font-medium whitespace-nowrap text-white",
+      "hover:bg-gray-800 active:bg-gray-900",
+      "disabled:bg-gray-950 disabled:opacity-40"
+    ]
+  end
+
+  defp button_variant("secondary") do
+    [
+      "relative inline-flex items-center justify-center px-4 py-2",
+      "rounded-full border border-transparent bg-white/15 shadow-md ring-1 ring-gray-950/15",
+      "after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_2px_1px_#ffffff4d]",
+      "text-base font-medium whitespace-nowrap text-gray-950",
+      "hover:bg-white/20 active:bg-white/25",
+      "disabled:bg-white/15 disabled:opacity-40"
+    ]
+  end
+
+  defp button_variant("outline") do
+    [
+      "inline-flex items-center justify-center px-3 py-1.5",
+      "rounded-lg border border-transparent shadow-sm ring-1 ring-black/10",
+      "text-sm font-medium whitespace-nowrap text-gray-950",
+      "hover:bg-gray-50 active:bg-gray-100",
+      "disabled:bg-transparent disabled:opacity-40"
+    ]
   end
 
   @doc """
@@ -154,10 +186,13 @@ defmodule TodoErrWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-gray-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-gray-300 phx-no-feedback:focus:border-indigo-400",
-          @errors == [] && "border-gray-300 focus:border-indigo-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          "mt-2 block w-full rounded-lg px-3 py-2 text-base text-gray-950",
+          "border border-gray-300 shadow-sm ring-1 ring-black/5",
+          "placeholder:text-gray-500",
+          "focus:outline-none focus:ring-2 focus:ring-gray-950 focus:border-transparent",
+          "phx-no-feedback:border-gray-300",
+          @errors == [] && "border-gray-300",
+          @errors != [] && "border-rose-400 ring-rose-400"
         ]}
         {@rest}
       />
@@ -174,9 +209,62 @@ defmodule TodoErrWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-gray-900">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-gray-950">
       <%= render_slot(@inner_block) %>
     </label>
+    """
+  end
+
+  @doc """
+  Renders a large heading with Radiant-inspired typography.
+
+  ## Examples
+
+      <.heading>Close every deal</.heading>
+      <.heading class="max-w-3xl">Your custom heading</.heading>
+  """
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  def heading(assigns) do
+    ~H"""
+    <h2
+      class={[
+        "text-4xl font-medium tracking-tighter text-pretty text-gray-950 sm:text-6xl",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </h2>
+    """
+  end
+
+  @doc """
+  Renders a small subheading with uppercase styling.
+
+  ## Examples
+
+      <.subheading>Sales</.subheading>
+  """
+  attr :class, :string, default: nil
+  attr :rest, :global
+
+  slot :inner_block, required: true
+
+  def subheading(assigns) do
+    ~H"""
+    <h3
+      class={[
+        "font-mono text-xs/5 font-semibold tracking-widest text-gray-500 uppercase",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </h3>
     """
   end
 

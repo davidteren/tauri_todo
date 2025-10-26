@@ -23,33 +23,35 @@
 
 /* This file is for your main application CSS */
 
-/* Modern glassmorphic TodoErr styles inspired by Catalyst UI and iOS */
-:root {
-  --color-zinc-50: #fafafa;
-  --color-zinc-100: #f4f4f5;
-  --color-zinc-200: #e4e4e7;
-  --color-zinc-300: #d4d4d8;
-  --color-zinc-400: #a1a1aa;
-  --color-zinc-500: #71717a;
-  --color-zinc-600: #52525b;
-  --color-zinc-700: #3f3f46;
-  --color-zinc-800: #27272a;
-  --color-zinc-900: #18181b;
-  --color-zinc-950: #09090b;
-  --color-success: #10b981;
-  --color-danger: #ef4444;
-  --color-cyan-300: #67e8f9;
-  --color-cyan-400: #22d3ee;
-  --color-cyan-500: #06b6d4;
+/* Radiant-inspired design system with refined typography and spacing */
+@theme {
+  /* Custom radius for large rounded corners */
+  --radius-4xl: 2rem;
+
+  /* Typography scale with tighter tracking for display text */
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+
+  /* Refined color palette with sophisticated grays */
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f4f4f5;
+  --color-gray-200: #e4e4e7;
+  --color-gray-300: #d4d4d8;
+  --color-gray-400: #a1a1aa;
+  --color-gray-500: #71717a;
+  --color-gray-600: #52525b;
+  --color-gray-700: #3f3f46;
+  --color-gray-800: #27272a;
+  --color-gray-900: #18181b;
+  --color-gray-950: #09090b;
 }
 
 /* Smooth transitions for interactive elements */
-button, input, .todo-item {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+button, input, a {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Focus styles for accessibility - subtle blue ring */
-button:focus-visible, input:focus-visible {
-  outline: hidden;
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
+/* Focus styles for accessibility */
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid rgb(59 130 246 / 0.5);
+  outline-offset: 2px;
 }
