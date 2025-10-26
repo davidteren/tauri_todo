@@ -19,7 +19,10 @@ defmodule TodoErrWeb.TodoLive do
 
   @impl true
   def handle_event("add_todo", %{"description" => description}, socket) do
-    case Todos.create_todo(%{description: description}) do
+    # Trim leading and trailing whitespace but preserve internal newlines
+    trimmed_description = String.trim(description)
+    
+    case Todos.create_todo(%{description: trimmed_description}) do
       {:ok, _todo} ->
         socket =
           socket
