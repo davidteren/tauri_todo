@@ -186,11 +186,7 @@ defmodule TodoErrWeb.TodoLive do
         <div class="flex-1 min-w-0">
           <%= if @editing_id == @todo.id do %>
             <form phx-submit="save_edit" phx-value-id={@todo.id} class="flex gap-2">
-              <textarea
-                name="description"
-                rows="3"
-                class="flex-1 px-3 py-2 text-base font-medium text-gray-950 bg-white/60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              ><%= @todo.description %></textarea>
+              <textarea name="description" rows="3" class="flex-1 px-3 py-2 text-base font-medium text-gray-950 bg-white/60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"><%= @todo.description %></textarea>
               <div class="flex flex-col gap-1">
                 <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Save">
                   <.icon name="hero-check" class="w-5 h-5" />
