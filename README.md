@@ -33,12 +33,22 @@ Visit [`localhost:4000`](http://localhost:4000) in your browser.
 ### Building the Desktop App
 
 ```bash
-# Build and run the Tauri desktop app
+# Full clean build (recommended for first build or after major changes)
 ./scripts/build_and_run.sh
 
-# Or build without opening
+# Fast incremental build (much faster, good for iterating)
+./scripts/build_and_run.sh --fast
+
+# Build without opening the app
 ./scripts/build_and_run.sh --no-open
+
+# Fast build without opening
+./scripts/build_and_run.sh --fast --no-open
 ```
+
+**Build Modes:**
+- **Full clean build** (default): Cleans all caches, ~2-3 minutes
+- **Fast build** (`--fast`): Incremental build, ~30-60 seconds
 
 The desktop app will be available at:
 - `src-tauri/target/release/bundle/macos/TodoErr.app`

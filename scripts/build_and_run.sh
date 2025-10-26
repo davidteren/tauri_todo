@@ -7,6 +7,25 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Parse arguments
+FULL_CLEAN=true
+NO_OPEN=false
+
+for arg in "$@"; do
+  case $arg in
+    --fast)
+      FULL_CLEAN=false
+      shift
+      ;;
+    --no-open)
+      NO_OPEN=true
+      shift
+      ;;
+    *)
+      ;;
+  esac
+done
+
 # Ensure we run from project root (directory with mix.exs)
 if [[ ! -f "mix.exs" ]]; then
   echo -e "${RED}Error:${NC} This script must be run from the project root (where mix.exs is located)."
@@ -18,28 +37,36 @@ fi
 command -v mix >/dev/null 2>&1 || { echo -e "${RED}mix not found. Install Elixir.${NC}"; exit 1; }
 command -v npx >/dev/null 2>&1 || { echo -e "${RED}npx not found. Install Node.js/npm.${NC}"; exit 1; }
 
-# Step 0: Clean all build artifacts and kill running processes
-echo -e "${GREEN}==> Cleaning build artifacts and killing processes${NC}"
+# Step 0: Kill running processes
+echo -e "${GREEN}==> Killing running processes${NC}"
 killall -9 TodoErr app beam.smp epmd 2>/dev/null || true
 epmd -kill 2>/dev/null || true
 sleep 1
 
-echo -e "${YELLOW}  - Removing Elixir release${NC}"
-rm -rf _build/prod/rel/todo_err
+# Step 0.5: Clean build artifacts (optional)
+if [ "$FULL_CLEAN" = true ]; then
+  echo -e "${GREEN}==> Full clean mode${NC}"
+  
+  echo -e "${YELLOW}  - Removing Elixir release${NC}"
+  rm -rf _build/prod/rel/todo_err
 
-echo -e "${YELLOW}  - Removing static assets${NC}"
-rm -rf priv/static/assets
+  echo -e "${YELLOW}  - Removing static assets${NC}"
+  rm -rf priv/static/assets
 
-echo -e "${YELLOW}  - Removing Tauri build cache${NC}"
-rm -rf src-tauri/target/release
+  echo -e "${YELLOW}  - Removing Tauri build cache${NC}"
+  rm -rf src-tauri/target/release
 
-echo -e "${YELLOW}  - Cleaning Cargo cache${NC}"
-cd src-tauri && cargo clean && cd ..
+  echo -e "${YELLOW}  - Cleaning Cargo cache${NC}"
+  cd src-tauri && cargo clean && cd ..
 
-echo -e "${YELLOW}  - Clearing Tauri webview cache${NC}"
-# Clear macOS webview cache for the app
-rm -rf ~/Library/Caches/com.todoerr.desktop 2>/dev/null || true
-rm -rf ~/Library/WebKit/com.todoerr.desktop 2>/dev/null || true
+  echo -e "${YELLOW}  - Clearing Tauri webview cache${NC}"
+  # Clear macOS webview cache for the app
+  rm -rf ~/Library/Caches/com.todoerr.desktop 2>/dev/null || true
+  rm -rf ~/Library/WebKit/com.todoerr.desktop 2>/dev/null || true
+else
+  echo -e "${YELLOW}==> Fast build mode (incremental)${NC}"
+  echo -e "${YELLOW}  - Skipping full clean (use without --fast for full clean)${NC}"
+fi
 
 # Step 1: Build fresh assets
 echo -e "${GREEN}==> Building fresh assets${NC}"
@@ -105,7 +132,7 @@ popd >/dev/null
 pushd src-tauri >/dev/null
 
 # Step 6: Launch the app (optional)
-if [[ "${1:-}" == "--no-open" ]]; then
+if [ "$NO_OPEN" = true ]; then
   echo -e "${YELLOW}Skipping app launch (--no-open)${NC}"
 else
   echo -e "${GREEN}==> Launching app${NC}"
