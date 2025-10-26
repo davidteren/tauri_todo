@@ -38,8 +38,8 @@
       </form>
     </div>
 
-    <!-- Todo List -->
-    <div class="space-y-3">
+    <!-- Todo List with YTI Grouping -->
+    <div class="space-y-8">
       <%= if Enum.empty?(@todos) do %>
         <div class="rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 p-12 text-center">
           <div class="inline-flex items-center justify-center w-16 h-16 bg-white/60 rounded-full mb-4">
@@ -49,49 +49,42 @@
           <p class="text-base text-gray-600">You have no tasks. Add one above to get started.</p>
         </div>
       <% else %>
-        <%= for todo <- @todos do %>
-          <div class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200">
-            <div class="flex items-center gap-4 p-5">
-              <!-- Checkbox -->
-              <button
-                phx-click="toggle_complete"
-                phx-value-id={todo.id}
-                class={[
-                  "flex-shrink-0 w-5 h-5 rounded border-2 transition-all flex items-center justify-center",
-                  if(todo.completed,
-                    do: "bg-gray-950 border-gray-950",
-                    else: "border-gray-400 hover:border-gray-950"
-                  )
-                ]}
-              >
-                <%= if todo.completed do %>
-                  <.icon name="hero-check" class="w-3.5 h-3.5 text-white" />
-                <% end %>
-              </button>
+        <!-- Today Section -->
+        <%= if length(@grouped_todos[:today] || []) > 0 do %>
+          <div class="space-y-3">
+            <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-950">
+              <.icon name="hero-calendar" class="w-5 h-5 text-blue-600" />
+              Today
+            </h2>
+            <%= for todo <- @grouped_todos[:today] do %>
+              <%= render_todo_card(assigns, todo) %>
+            <% end %>
+          </div>
+        <% end %>
 
-              <!-- Todo Text -->
-              <div class="flex-1 min-w-0">
-                <p class={[
-                  "text-base font-medium transition-all",
-                  if(todo.completed,
-                    do: "line-through text-gray-400",
-                    else: "text-gray-950"
-                  )
-                ]}>
-                  <%= todo.description %>
-                </p>
-              </div>
+        <!-- Impediments Section -->
+        <%= if length(@grouped_todos[:impediments] || []) > 0 do %>
+          <div class="space-y-3">
+            <h2 class="flex items-center gap-2 text-lg font-semibold text-red-600">
+              <.icon name="hero-exclamation-triangle" class="w-5 h-5" />
+              Impediments / Blocked
+            </h2>
+            <%= for todo <- @grouped_todos[:impediments] do %>
+              <%= render_todo_card(assigns, todo) %>
+            <% end %>
+          </div>
+        <% end %>
 
-              <!-- Delete Button -->
-              <button
-                phx-click="delete_todo"
-                phx-value-id={todo.id}
-                class="flex-shrink-0 p-2 text-gray-400 hover:text-rose-600 hover:bg-white/60 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                title="Delete todo"
-              >
-                <.icon name="hero-trash" class="w-5 h-5" />
-              </button>
-            </div>
+        <!-- Yesterday Section -->
+        <%= if length(@grouped_todos[:yesterday] || []) > 0 do %>
+          <div class="space-y-3">
+            <h2 class="flex items-center gap-2 text-lg font-semibold text-green-600">
+              <.icon name="hero-check-badge" class="w-5 h-5" />
+              Completed Yesterday
+            </h2>
+            <%= for todo <- @grouped_todos[:yesterday] do %>
+              <%= render_todo_card(assigns, todo) %>
+            <% end %>
           </div>
         <% end %>
       <% end %>
