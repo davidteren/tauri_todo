@@ -47,7 +47,7 @@ MIX_ENV=prod mix assets.deploy
 
 # Step 2: Build Elixir release
 echo -e "${GREEN}==> Building Elixir release (prod)${NC}"
-MIX_ENV=prod mix release --overwrite
+echo "Y" | MIX_ENV=prod mix release --overwrite
 
 REL_DIR="_build/prod/rel/todo_err"
 ERTS_BIN_GLOB="${REL_DIR}/erts-*/bin"
