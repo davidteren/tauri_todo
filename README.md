@@ -4,8 +4,7 @@ A beautiful, modern task management application built with Phoenix LiveView and 
 
 > **Note:** Currently supports **macOS only** (Apple Silicon & Intel). Windows and Linux support coming soon.
 
-<!-- Screenshot placeholder - add your screenshot here -->
-<!-- ![TodoErr App Screenshot](docs/screenshot.png) -->
+![TodoErr App Screenshot](screenshots/screenshot.png)
 
 ## Features
 
