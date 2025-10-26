@@ -17,20 +17,19 @@
 
     <!-- Add Todo Form -->
     <div class="mb-12">
-      <form phx-submit="add_todo" class="flex gap-3">
+      <form phx-submit="add_todo" class="flex gap-3 items-start">
         <div class="relative flex-1">
-          <input
-            type="text"
+          <textarea
             name="description"
-            value={@form[:description].value}
+            rows="3"
             placeholder="What needs to be done?"
             autocomplete="off"
-            class="relative w-full px-4 py-[calc(theme(spacing.2)-1px)] rounded-full border border-transparent bg-white/15 shadow-md ring-1 ring-black/15 text-base font-medium text-gray-950 placeholder:text-gray-600 focus:outline-none focus:bg-white/20 focus:ring-2 focus:ring-gray-950/20 after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_2px_1px_#ffffff4d]"
-          />
+            class="relative w-full px-4 py-3 rounded-3xl border border-transparent bg-white/15 shadow-md ring-1 ring-black/15 text-base font-medium text-gray-950 placeholder:text-gray-600 focus:outline-none focus:bg-white/20 focus:ring-2 focus:ring-gray-950/20 resize-none"
+          ><%= @form[:description].value %></textarea>
         </div>
         <button
           type="submit"
-          class="relative inline-flex items-center justify-center gap-x-2 px-6 py-[calc(theme(spacing.2)-1px)] rounded-full border border-transparent bg-white/15 shadow-md ring-1 ring-gray-950/15 text-base font-medium whitespace-nowrap text-gray-950 hover:bg-white/20 active:bg-white/25 phx-submit-loading:opacity-75 after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_2px_1px_#ffffff4d]"
+          class="relative inline-flex items-center justify-center gap-x-2 px-6 py-3 rounded-full border border-transparent bg-white/15 shadow-md ring-1 ring-gray-950/15 text-base font-medium whitespace-nowrap text-gray-950 hover:bg-white/20 active:bg-white/25 phx-submit-loading:opacity-75 after:absolute after:inset-0 after:rounded-full after:shadow-[inset_0_0_2px_1px_#ffffff4d]"
         >
           <.icon name="hero-plus" class="w-5 h-5 shrink-0" />
           <span class="hidden sm:inline">Add Task</span>
