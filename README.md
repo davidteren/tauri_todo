@@ -1,18 +1,72 @@
 # TodoErr
 
-To start your Phoenix server:
+A beautiful, modern task management application built with Phoenix LiveView and packaged as a desktop app using Tauri.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Features
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+- ✅ Add, complete, and delete tasks
+- ✅ Real-time updates with Phoenix LiveView
+- ✅ Modern glassmorphic UI with cyan/teal color scheme
+- ✅ SQLite database for local storage
+- ✅ Desktop app for macOS (via Tauri)
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Development
 
-## Learn more
+### Prerequisites
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+- Elixir 1.14+ and Erlang/OTP 25+
+- Node.js 18+ (for asset compilation)
+- Rust 1.70+ (for Tauri desktop app)
+
+### Running the Phoenix Server
+
+```bash
+# Install dependencies
+mix setup
+
+# Start the Phoenix server
+mix phx.server
+```
+
+Visit [`localhost:4000`](http://localhost:4000) in your browser.
+
+### Building the Desktop App
+
+```bash
+# Build and run the Tauri desktop app
+./scripts/build_and_run.sh
+
+# Or build without opening
+./scripts/build_and_run.sh --no-open
+```
+
+The desktop app will be available at:
+- `src-tauri/target/release/bundle/macos/TodoErr.app`
+- `src-tauri/target/release/bundle/dmg/TodoErr_0.1.0_aarch64.dmg`
+
+## Tech Stack
+
+- **Backend**: Phoenix 1.8, Elixir
+- **Frontend**: Phoenix LiveView, Tailwind CSS v4
+- **Database**: SQLite (via Ecto)
+- **Desktop**: Tauri v2
+- **Asset Pipeline**: esbuild
+
+## Project Structure
+
+```
+todo_err/
+├── lib/
+│   ├── todo_err/           # Business logic
+│   └── todo_err_web/       # Web interface (LiveView)
+├── assets/                 # Frontend assets (JS, CSS)
+├── priv/                   # Static files and migrations
+├── src-tauri/             # Tauri desktop app
+└── scripts/               # Build and deployment scripts
+```
+
+## Learn More
+
+* Phoenix: https://www.phoenixframework.org/
+* Tauri: https://tauri.app/
+* Tailwind CSS: https://tailwindcss.com/
