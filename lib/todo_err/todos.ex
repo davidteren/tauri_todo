@@ -91,4 +91,22 @@ defmodule TodoErr.Todos do
 
   """
   def get_todo!(id), do: Repo.get!(Todo, id)
+
+  @doc """
+  Updates a todo.
+
+  ## Examples
+
+      iex> update_todo(todo, %{description: "New description"})
+      {:ok, %Todo{}}
+
+      iex> update_todo(todo, %{description: ""})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_todo(%Todo{} = todo, attrs) do
+    todo
+    |> Todo.changeset(attrs)
+    |> Repo.update()
+  end
 end

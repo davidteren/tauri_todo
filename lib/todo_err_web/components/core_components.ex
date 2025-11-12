@@ -119,7 +119,7 @@ defmodule TodoErrWeb.CoreComponents do
 
     ~H"""
     <div phx-feedback-for={@name}>
-      <label class="flex items-center gap-4 text-sm leading-6 text-gray-600">
+      <label class="flex items-center gap-4 text-sm leading-2 text-gray-600">
         <input type="hidden" name={@name} value="false" />
         <input
           type="checkbox"
@@ -347,7 +347,7 @@ defmodule TodoErrWeb.CoreComponents do
     """
   end
 
-  defp hide(js \\ %JS{}, selector) do
+  defp hide(js, selector) do
     JS.hide(js,
       to: selector,
       time: 200,
@@ -365,4 +365,3 @@ defmodule TodoErrWeb.CoreComponents do
 
   defp translate_error(msg), do: msg
 end
-
