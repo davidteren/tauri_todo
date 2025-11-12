@@ -1,11 +1,96 @@
 // Phoenix LiveView client setup with ES module imports
 // Import Phoenix and LiveView JS clients from dependencies (no npm required)
 import { Socket } from "phoenix"
+import "phoenix_html"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
-// LiveView Hooks
+// Markdown support
 let Hooks = {}
+
+// Markdown Editor Hook
+Hooks.MarkdownEditor = {
+  mounted() {
+    this.setupEditor()
+  },
+
+  updated() {
+    this.setupEditor()
+  },
+
+  destroyed() {
+    if (this.editor) {
+      this.editor.toTextArea()
+      this.editor = null
+    }
+  },
+
+  setupEditor() {
+    // Simple textarea for now, can be enhanced with EasyMDE
+    const textarea = this.el.querySelector('textarea[name="description"]')
+    if (textarea) {
+      // Add markdown support styling
+      textarea.classList.add('markdown-editor')
+    }
+  }
+}
+
+// Markdown Renderer Hook
+Hooks.MarkdownRenderer = {
+  mounted() {
+    this.render()
+  },
+
+  updated() {
+    this.render()
+  },
+
+  render() {
+    const p = this.el.querySelector('p')
+    const raw = this.el.dataset.raw || (p ? p.textContent : this.el.textContent) || ''
+    const safe = this.escapeHTML(raw)
+    const html = this.parseMarkdown(safe)
+    this.el.innerHTML = html
+  },
+
+  escapeHTML(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  },
+
+  parseMarkdown(text) {
+    // Minimal Markdown support; input already escaped
+    let out = text
+      .replace(/^######\s+(.*)$/gim, '<h6>$1</h6>')
+      .replace(/^#####\s+(.*)$/gim, '<h5>$1</h5>')
+      .replace(/^####\s+(.*)$/gim, '<h4>$1</h4>')
+      .replace(/^###\s+(.*)$/gim, '<h3>$1</h3>')
+      .replace(/^##\s+(.*)$/gim, '<h2>$1</h2>')
+      .replace(/^#\s+(.*)$/gim, '<h1>$1</h1>')
+      .replace(/\*\*(.+?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/gim, '<em>$1</em>')
+      .replace(/`([^`]+?)`/gim, '<code>$1</code>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>')
+
+    // Lists: convert lines starting with - or * into <li>, then wrap contiguous blocks into <ul>
+    out = out.replace(/^(?:\s*[-*]\s+.+(?:\n|$))+?/gim, (block) => {
+      const items = block
+        .trimEnd()
+        .split(/\n/)
+        .map((line) => line.replace(/^\s*[-*]\s+(.+)$/, '<li>$1</li>'))
+        .join('')
+      return `<ul>${items}</ul>`
+    })
+
+    // Paragraph breaks
+    out = out.replace(/\n\n+/g, '<br>')
+    return out
+  }
+}
 
 Hooks.DragDrop = {
   mounted() {

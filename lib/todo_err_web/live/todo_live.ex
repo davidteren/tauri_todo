@@ -14,6 +14,7 @@ defmodule TodoErrWeb.TodoLive do
       |> assign(:form, to_form(%{"description" => ""}))
       |> assign(:editing_id, nil)
       |> assign(:show_completed, false)
+      |> assign(:preview_id, nil)
 
     {:ok, socket}
   end
@@ -120,6 +121,18 @@ defmodule TodoErrWeb.TodoLive do
   end
 
   @impl true
+  def handle_event("toggle_preview", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+    preview_id = if socket.assigns.preview_id == id, do: nil, else: id
+    {:noreply, assign(socket, :preview_id, preview_id)}
+  end
+
+  @impl true
+  def handle_event("toggle_show_completed", _params, socket) do
+    {:noreply, assign(socket, :show_completed, !socket.assigns.show_completed)}
+  end
+
+  @impl true
   def handle_event("save_edit", %{"id" => id, "description" => description}, socket) do
     todo = Todos.get_todo!(id)
 
@@ -175,20 +188,10 @@ defmodule TodoErrWeb.TodoLive do
   end
 
   @impl true
-  def handle_event("toggle_show_completed", _params, socket) do
-    {:noreply, assign(socket, :show_completed, !socket.assigns.show_completed)}
-  end
-
-  @impl true
-  def handle_event("reorder_todos", %{"todo_ids" => todo_ids}, socket) do
-    case Todos.reorder_todos(todo_ids) do
-      {:ok, _todos} ->
-        socket =
-          socket
-          |> refresh_todos()
-          |> clear_flash()
-
-        {:noreply, socket}
+  def handle_event("reorder_todos", %{"todo_ids" => ids}, socket) do
+    case Todos.reorder_todos(ids) do
+      {:ok, _} ->
+        {:noreply, refresh_todos(socket)}
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to reorder todos")}
@@ -237,26 +240,57 @@ defmodule TodoErrWeb.TodoLive do
         <!-- Todo Text / Edit Field -->
         <div class="flex-1 min-w-0">
           <%= if @editing_id == @todo.id do %>
-            <form phx-submit="save_edit" phx-value-id={@todo.id} class="flex gap-2">
-              <textarea name="description" rows="3" class="flex-1 px-3 py-2 text-base font-medium text-gray-950 bg-white/60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"><%= @todo.description %></textarea>
-              <div class="flex flex-col gap-1">
-                <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Save">
-                  <.icon name="hero-check" class="w-5 h-5" />
-                </button>
-                <button type="button" phx-click="cancel_edit" class="p-2 text-gray-400 hover:bg-gray-100 rounded-lg" title="Cancel">
-                  <.icon name="hero-x-mark" class="w-5 h-5" />
-                </button>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-600">Markdown Editor</span>
+                <div class="flex gap-1">
+                  <button type="button" class="text-xs px-2 py-1 bg-gray-100 rounded hover:bg-gray-200" phx-click="toggle_preview" phx-value-id={@todo.id}>
+                    Preview
+                  </button>
+                </div>
               </div>
-            </form>
+              <form phx-submit="save_edit" phx-value-id={@todo.id} class="flex gap-2">
+                <textarea
+                  id={"todo-#{@todo.id}-editor"}
+                  name="description"
+                  rows="4"
+                  class="flex-1 px-3 py-2 text-base font-medium text-gray-950 bg-white/60 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none font-mono text-sm"
+                  placeholder="Enter Markdown content..."
+                  phx-hook="MarkdownEditor"
+                ><%= @todo.description %></textarea>
+                <div class="flex flex-col gap-1">
+                  <button type="submit" class="p-2 text-green-600 hover:bg-green-50 rounded-lg" title="Save">
+                    <.icon name="hero-check" class="w-5 h-5" />
+                  </button>
+                  <button type="button" phx-click="cancel_edit" class="p-2 text-gray-400 hover:bg-gray-100 rounded-lg" title="Cancel">
+                    <.icon name="hero-x-mark" class="w-5 h-5" />
+                  </button>
+                </div>
+              </form>
+            </div>
           <% else %>
-            <div phx-click="start_edit" phx-value-id={@todo.id} class="cursor-pointer">
-              <p class={[
-                "text-base font-medium transition-all whitespace-pre-wrap",
-                if(@todo.completed,
-                  do: "line-through text-gray-400",
-                  else: "text-gray-950"
-                )
-              ]}><%= @todo.description %></p>
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">Markdown</span>
+                  <button
+                    phx-click="start_edit"
+                    phx-value-id={@todo.id}
+                    class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+              <div id={"todo-#{@todo.id}-markdown"} class="markdown-content" phx-hook="MarkdownRenderer">
+                <p class={[
+                  "text-base font-medium transition-all whitespace-pre-wrap",
+                  if(@todo.completed,
+                    do: "line-through text-gray-400",
+                    else: "text-gray-950"
+                  )
+                ]}><%= @todo.description %></p>
+              </div>
             </div>
           <% end %>
         </div>

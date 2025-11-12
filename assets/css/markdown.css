@@ -1,0 +1,94 @@
+/* Markdown Styles for TodoErr */
+.markdown-content {
+  @apply text-gray-950;
+}
+
+.markdown-content h1 {
+  @apply text-2xl font-bold mb-2 text-gray-900;
+}
+
+.markdown-content h2 {
+  @apply text-xl font-bold mb-2 text-gray-900;
+}
+
+.markdown-content h3 {
+  @apply text-lg font-bold mb-1 text-gray-900;
+}
+
+.markdown-content h4 {
+  @apply text-base font-bold mb-1 text-gray-900;
+}
+
+.markdown-content p {
+  @apply mb-2 leading-relaxed;
+}
+
+.markdown-content ul {
+  @apply list-disc list-inside mb-2 space-y-1;
+}
+
+.markdown-content ol {
+  @apply list-decimal list-inside mb-2 space-y-1;
+}
+
+.markdown-content li {
+  @apply ml-4;
+}
+
+.markdown-content strong {
+  @apply font-bold text-gray-900;
+}
+
+.markdown-content em {
+  @apply italic;
+}
+
+.markdown-content code {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
+}
+
+.markdown-content pre {
+  @apply bg-gray-100 p-3 rounded-lg my-2 overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-gray-300 pl-4 italic text-gray-600;
+}
+
+.markdown-content a {
+  @apply text-blue-600 hover:underline;
+}
+
+.markdown-content .task-list-item {
+  @apply list-none;
+}
+
+.markdown-content .task-list-item input[type="checkbox"] {
+  @apply mr-2;
+}
+
+/* Editor styles */
+.markdown-editor {
+  @apply font-mono text-sm leading-relaxed;
+}
+
+.markdown-editor:focus {
+  @apply outline-none ring-2 ring-blue-500;
+}
+
+/* Preview styles */
+.markdown-preview {
+  @apply prose prose-sm max-w-none;
+}
+
+.markdown-preview :where(code):not(:where([class~="not-prose"] *)) {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm;
+}
+
+.markdown-preview :where(pre):not(:where([class~="not-prose"] *)) {
+  @apply bg-gray-100 p-3 rounded-lg;
+}
