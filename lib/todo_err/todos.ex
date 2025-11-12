@@ -10,7 +10,7 @@ defmodule TodoErr.Todos do
 
   @doc """
   Returns the list of todos, sorted with incomplete tasks first,
-  then by creation date (newest first).
+  then by position (lowest first).
 
   ## Examples
 
@@ -20,7 +20,7 @@ defmodule TodoErr.Todos do
   """
   def list_todos do
     Todo
-    |> order_by([t], [asc: t.completed, desc: t.inserted_at])
+    |> order_by([t], [asc: t.completed, asc: t.position])
     |> Repo.all()
   end
 
@@ -37,6 +37,13 @@ defmodule TodoErr.Todos do
 
   """
   def create_todo(attrs \\ %{}) do
+    # Get the next position for new todos
+    max_position =
+      from(t in Todo, select: max(t.position))
+      |> Repo.one() || 0
+
+    attrs = Map.put(attrs, :position, max_position + 1)
+
     %Todo{}
     |> Todo.changeset(attrs)
     |> Repo.insert()
@@ -108,5 +115,27 @@ defmodule TodoErr.Todos do
     todo
     |> Todo.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Reorders todos based on a list of todo IDs in the new order.
+  Updates the position field for all affected todos.
+
+  ## Examples
+
+      iex> reorder_todos([3, 1, 2])
+      {:ok, [%Todo{}, ...]}
+
+  """
+  def reorder_todos(todo_ids) when is_list(todo_ids) do
+    Repo.transaction(fn ->
+      todo_ids
+      |> Enum.with_index()
+      |> Enum.map(fn {id, index} ->
+        todo = get_todo!(id)
+        {:ok, updated_todo} = update_todo(todo, %{position: index + 1})
+        updated_todo
+      end)
+    end)
   end
 end

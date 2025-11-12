@@ -11,6 +11,7 @@ defmodule TodoErr.Todos.Todo do
     field :blocked, :boolean, default: false
     field :completed_at, :utc_datetime
     field :scheduled_for, :date
+    field :position, :integer
 
     timestamps(type: :utc_datetime)
   end
@@ -18,7 +19,7 @@ defmodule TodoErr.Todos.Todo do
   @doc false
   def changeset(todo, attrs) do
     todo
-    |> cast(attrs, [:description, :completed, :blocked, :completed_at, :scheduled_for])
+    |> cast(attrs, [:description, :completed, :blocked, :completed_at, :scheduled_for, :position])
     |> validate_required([:description])
     |> validate_length(:description, min: 1, max: 1000)
     |> maybe_set_completed_at()
@@ -27,14 +28,14 @@ defmodule TodoErr.Todos.Todo do
 
   defp maybe_set_completed_at(changeset) do
     completed = get_change(changeset, :completed)
-    
+
     cond do
       completed == true and is_nil(get_field(changeset, :completed_at)) ->
         put_change(changeset, :completed_at, DateTime.utc_now() |> DateTime.truncate(:second))
-      
+
       completed == false ->
         put_change(changeset, :completed_at, nil)
-      
+
       true ->
         changeset
     end

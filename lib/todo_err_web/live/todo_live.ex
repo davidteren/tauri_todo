@@ -179,12 +179,38 @@ defmodule TodoErrWeb.TodoLive do
     {:noreply, assign(socket, :show_completed, !socket.assigns.show_completed)}
   end
 
+  @impl true
+  def handle_event("reorder_todos", %{"todo_ids" => todo_ids}, socket) do
+    case Todos.reorder_todos(todo_ids) do
+      {:ok, _todos} ->
+        socket =
+          socket
+          |> refresh_todos()
+          |> clear_flash()
+
+        {:noreply, socket}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to reorder todos")}
+    end
+  end
+
   defp render_todo_card(assigns, todo) do
     assigns = assign(assigns, :todo, todo)
 
     ~H"""
-    <div class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200">
+    <div
+      id={"todo-#{@todo.id}"}
+      class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing"
+      data-todo-id={@todo.id}
+      phx-hook="DragDrop"
+    >
       <div class="flex items-center gap-4 p-5">
+        <!-- Drag Handle -->
+        <div class="flex-shrink-0 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing">
+          <.icon name="hero-bars-3" class="w-5 h-5" />
+        </div>
+
         <!-- Checkbox -->
         <button
           phx-click="toggle_complete"

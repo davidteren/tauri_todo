@@ -44,7 +44,7 @@
       <% else %>
         <!-- Today Section -->
         <%= if length(@grouped_todos[:today] || []) > 0 do %>
-          <div class="space-y-3">
+          <div class="space-y-3" data-todos-container>
             <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-950">
               <.icon name="hero-calendar" class="w-5 h-5 text-blue-600" />
               Today
@@ -57,7 +57,7 @@
 
         <!-- Impediments Section -->
         <%= if length(@grouped_todos[:impediments] || []) > 0 do %>
-          <div class="space-y-3">
+          <div class="space-y-3" data-todos-container>
             <h2 class="flex items-center gap-2 text-lg font-semibold text-red-600">
               <.icon name="hero-exclamation-triangle" class="w-5 h-5" />
               Impediments / Blocked
@@ -70,7 +70,7 @@
 
         <!-- Yesterday Section -->
         <%= if length(@grouped_todos[:yesterday] || []) > 0 do %>
-          <div class="space-y-3">
+          <div class="space-y-3" data-todos-container>
             <h2 class="flex items-center gap-2 text-lg font-semibold text-green-600">
               <.icon name="hero-check-badge" class="w-5 h-5" />
               Completed Yesterday
@@ -83,7 +83,7 @@
 
         <!-- All Completed Tasks Section -->
         <%= if length(@grouped_todos[:completed] || []) > 0 do %>
-          <div class="space-y-3">
+          <div class="space-y-3" data-todos-container>
             <div class="flex items-center justify-between">
               <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-600">
                 <.icon name="hero-archive-box" class="w-5 h-5" />
