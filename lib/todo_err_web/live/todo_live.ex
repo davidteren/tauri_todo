@@ -217,9 +217,7 @@ defmodule TodoErrWeb.TodoLive do
                   do: "line-through text-gray-400",
                   else: "text-gray-950"
                 )
-              ]}>
-                <%= @todo.description %>
-              </p>
+              ]}><%= @todo.description %></p>
             </div>
           <% end %>
         </div>

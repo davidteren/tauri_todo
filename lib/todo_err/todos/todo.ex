@@ -30,7 +30,7 @@ defmodule TodoErr.Todos.Todo do
     
     cond do
       completed == true and is_nil(get_field(changeset, :completed_at)) ->
-        put_change(changeset, :completed_at, DateTime.utc_now())
+        put_change(changeset, :completed_at, DateTime.utc_now() |> DateTime.truncate(:second))
       
       completed == false ->
         put_change(changeset, :completed_at, nil)
