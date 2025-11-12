@@ -15,6 +15,7 @@ defmodule TodoErrWeb.TodoLive do
       |> assign(:editing_id, nil)
       |> assign(:show_completed, false)
       |> assign(:preview_id, nil)
+      |> assign(:expanded_id, nil)
 
     {:ok, socket}
   end
@@ -125,6 +126,13 @@ defmodule TodoErrWeb.TodoLive do
     id = String.to_integer(id)
     preview_id = if socket.assigns.preview_id == id, do: nil, else: id
     {:noreply, assign(socket, :preview_id, preview_id)}
+  end
+
+  @impl true
+  def handle_event("toggle_expand", %{"id" => id}, socket) do
+    id = String.to_integer(id)
+    expanded_id = if socket.assigns.expanded_id == id, do: nil, else: id
+    {:noreply, assign(socket, :expanded_id, expanded_id)}
   end
 
   @impl true
@@ -269,20 +277,36 @@ defmodule TodoErrWeb.TodoLive do
               </form>
             </div>
           <% else %>
+            <% title = @todo.description |> String.split("\n") |> Enum.at(0, "") |> String.trim() %>
             <div class="space-y-1">
-              <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">Markdown</span>
-                  <button
-                    phx-click="start_edit"
-                    phx-value-id={@todo.id}
-                    class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
-                  >
-                    Edit
-                  </button>
-                </div>
+              <div class={[
+                "flex items-center gap-2",
+                if(@expanded_id == @todo.id, do: "flex", else: "hidden group-hover:flex")
+              ]}>
+                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">Markdown</span>
+                <button
+                  phx-click="start_edit"
+                  phx-value-id={@todo.id}
+                  class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
+                >
+                  Edit
+                </button>
               </div>
-              <div id={"todo-#{@todo.id}-markdown"} class="markdown-content" phx-hook="MarkdownRenderer">
+              <button
+                type="button"
+                phx-click="toggle_expand"
+                phx-value-id={@todo.id}
+                class={[
+                  "w-full text-left text-base font-medium transition-all overflow-hidden whitespace-nowrap text-ellipsis",
+                  if(@todo.completed, do: "line-through text-gray-400", else: "text-gray-950"),
+                  if(@expanded_id == @todo.id, do: "hidden", else: "block"),
+                  "group-hover:hidden"
+                ]}
+                title={title}
+              >
+                <%= title %>
+              </button>
+              <div id={"todo-#{@todo.id}-markdown"} class={["markdown-content", if(@expanded_id == @todo.id, do: "block", else: "hidden group-hover:block")]} phx-hook="MarkdownRenderer">
                 <p class={[
                   "text-base font-medium transition-all whitespace-pre-wrap",
                   if(@todo.completed,

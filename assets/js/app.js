@@ -23,15 +23,34 @@ Hooks.MarkdownEditor = {
       this.editor.toTextArea()
       this.editor = null
     }
+    if (this._resizeHandler && this.textarea) {
+      this.textarea.removeEventListener('input', this._resizeHandler)
+    }
   },
 
   setupEditor() {
     // Simple textarea for now, can be enhanced with EasyMDE
     const textarea = this.el.querySelector('textarea[name="description"]')
-    if (textarea) {
-      // Add markdown support styling
-      textarea.classList.add('markdown-editor')
+    if (!textarea) return
+
+    // Add markdown support styling
+    textarea.classList.add('markdown-editor')
+
+    // Auto-resize to fit content
+    const autosize = (ta) => {
+      ta.style.height = 'auto'
+      ta.style.overflow = 'hidden'
+      ta.style.height = ta.scrollHeight + 'px'
     }
+
+    // Save references for cleanup
+    this.textarea = textarea
+    this._resizeHandler = () => autosize(textarea)
+
+    // Initialize and bind
+    autosize(textarea)
+    textarea.removeEventListener('input', this._resizeHandler)
+    textarea.addEventListener('input', this._resizeHandler)
   }
 }
 
