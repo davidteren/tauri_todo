@@ -20,13 +20,13 @@ defmodule TodoErrWeb.TodoLive do
   @impl true
   def handle_event("add_todo", %{"description" => description}, socket) do
     # Trim each line individually while preserving newlines
-    trimmed_description = 
+    trimmed_description =
       description
       |> String.split("\n")
       |> Enum.map(&String.trim/1)
       |> Enum.join("\n")
       |> String.trim()
-    
+
     case Todos.create_todo(%{description: trimmed_description}) do
       {:ok, _todo} ->
         socket =
@@ -121,9 +121,9 @@ defmodule TodoErrWeb.TodoLive do
   @impl true
   def handle_event("save_edit", %{"id" => id, "description" => description}, socket) do
     todo = Todos.get_todo!(id)
-    
+
     # Trim each line individually while preserving newlines
-    trimmed_description = 
+    trimmed_description =
       description
       |> String.split("\n")
       |> Enum.map(&String.trim/1)
@@ -153,7 +153,7 @@ defmodule TodoErrWeb.TodoLive do
     |> Enum.group_by(fn todo ->
       cond do
         todo.blocked -> :impediments
-        todo.completed and todo.completed_at && 
+        todo.completed and todo.completed_at &&
           Date.compare(DateTime.to_date(todo.completed_at), yesterday) == :eq -> :yesterday
         todo.completed -> :completed
         true -> :today
@@ -162,6 +162,7 @@ defmodule TodoErrWeb.TodoLive do
     |> Map.put_new(:today, [])
     |> Map.put_new(:impediments, [])
     |> Map.put_new(:yesterday, [])
+    |> Map.put_new(:completed, [])
   end
 
   defp refresh_todos(socket) do
@@ -174,7 +175,7 @@ defmodule TodoErrWeb.TodoLive do
 
   defp render_todo_card(assigns, todo) do
     assigns = assign(assigns, :todo, todo)
-    
+
     ~H"""
     <div class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200">
       <div class="flex items-center gap-4 p-5">

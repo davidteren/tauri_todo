@@ -80,6 +80,19 @@
             <% end %>
           </div>
         <% end %>
+
+        <!-- All Completed Tasks Section -->
+        <%= if length(@grouped_todos[:completed] || []) > 0 do %>
+          <div class="space-y-3">
+            <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-600">
+              <.icon name="hero-archive-box" class="w-5 h-5" />
+              All Completed Tasks
+            </h2>
+            <%= for todo <- @grouped_todos[:completed] do %>
+              <%= render_todo_card(assigns, todo) %>
+            <% end %>
+          </div>
+        <% end %>
       <% end %>
     </div>
 
