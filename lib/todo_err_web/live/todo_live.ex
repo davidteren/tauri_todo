@@ -13,6 +13,7 @@ defmodule TodoErrWeb.TodoLive do
       |> assign(:grouped_todos, group_todos_by_yti(todos))
       |> assign(:form, to_form(%{"description" => ""}))
       |> assign(:editing_id, nil)
+      |> assign(:show_completed, false)
 
     {:ok, socket}
   end
@@ -171,6 +172,11 @@ defmodule TodoErrWeb.TodoLive do
     socket
     |> assign(:todos, todos)
     |> assign(:grouped_todos, group_todos_by_yti(todos))
+  end
+
+  @impl true
+  def handle_event("toggle_show_completed", _params, socket) do
+    {:noreply, assign(socket, :show_completed, !socket.assigns.show_completed)}
   end
 
   defp render_todo_card(assigns, todo) do

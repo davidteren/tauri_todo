@@ -84,12 +84,28 @@
         <!-- All Completed Tasks Section -->
         <%= if length(@grouped_todos[:completed] || []) > 0 do %>
           <div class="space-y-3">
-            <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-600">
-              <.icon name="hero-archive-box" class="w-5 h-5" />
-              All Completed Tasks
-            </h2>
-            <%= for todo <- @grouped_todos[:completed] do %>
-              <%= render_todo_card(assigns, todo) %>
+            <div class="flex items-center justify-between">
+              <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-600">
+                <.icon name="hero-archive-box" class="w-5 h-5" />
+                All Completed Tasks
+              </h2>
+              <button
+                phx-click="toggle_show_completed"
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-sm font-medium text-gray-700 hover:bg-white/30 transition-colors duration-200 ring-1 ring-black/10"
+              >
+                <%= if @show_completed do %>
+                  <.icon name="hero-eye-slash" class="w-4 h-4" />
+                  Hide
+                <% else %>
+                  <.icon name="hero-eye" class="w-4 h-4" />
+                  Show
+                <% end %>
+              </button>
+            </div>
+            <%= if @show_completed do %>
+              <%= for todo <- @grouped_todos[:completed] do %>
+                <%= render_todo_card(assigns, todo) %>
+              <% end %>
             <% end %>
           </div>
         <% end %>
