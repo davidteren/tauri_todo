@@ -201,13 +201,19 @@ defmodule TodoErrWeb.TodoLive do
     ~H"""
     <div
       id={"todo-#{@todo.id}"}
-      class="group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200 cursor-grab active:cursor-grabbing"
+      class={[
+        "group rounded-3xl bg-gradient-to-br from-yellow-50/80 via-pink-50/80 to-purple-100/80 backdrop-blur-sm shadow-sm ring-1 ring-black/5 hover:shadow-md transition-all duration-200",
+        if(@editing_id == @todo.id, do: "", else: "cursor-grab active:cursor-grabbing")
+      ]}
       data-todo-id={@todo.id}
       phx-hook="DragDrop"
     >
       <div class="flex items-center gap-4 p-5">
         <!-- Drag Handle -->
-        <div class="flex-shrink-0 text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing">
+        <div class={[
+          "flex-shrink-0 text-gray-400 hover:text-gray-600",
+          if(@editing_id == @todo.id, do: "cursor-not-allowed opacity-50", else: "cursor-grab active:cursor-grabbing")
+        ]}>
           <.icon name="hero-bars-3" class="w-5 h-5" />
         </div>
 
