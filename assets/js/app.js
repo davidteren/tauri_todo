@@ -275,12 +275,65 @@ Hooks.DragDrop = {
     addListener(this.el, "pointerenter", pointerEnterHandler)
     addListener(this.el, "pointerleave", pointerLeaveHandler)
 
+    // Edit mode activation helpers
+    const isInteractiveTarget = (target) => !!(target && target.closest('button, a, input, textarea, [contenteditable]'))
+    const startEdit = () => {
+      const id = this.el.dataset.todoId
+      if (id) this.pushEvent("start_edit", { id })
+    }
+
+    // Double click to edit (desktop)
+    const dblClickHandler = (e) => {
+      if (isInteractiveTarget(e.target)) return
+      startEdit()
+    }
+
+    // Long press to edit (mobile/desktop)
+    let pressTimer = null
+    let pressStart = { x: 0, y: 0 }
+    const PRESS_DELAY = 500
+    const MOVE_TOLERANCE = 6
+
+    const pointerDownHandler = (e) => {
+      if (isInteractiveTarget(e.target)) return
+      pressStart = { x: e.clientX ?? 0, y: e.clientY ?? 0 }
+      clearTimeout(pressTimer)
+      pressTimer = setTimeout(() => {
+        pressTimer = null
+        startEdit()
+      }, PRESS_DELAY)
+    }
+
+    const pointerMoveHandler = (e) => {
+      if (!pressTimer) return
+      const dx = Math.abs((e.clientX ?? 0) - pressStart.x)
+      const dy = Math.abs((e.clientY ?? 0) - pressStart.y)
+      if (dx > MOVE_TOLERANCE || dy > MOVE_TOLERANCE) {
+        clearTimeout(pressTimer)
+        pressTimer = null
+      }
+    }
+
+    const cancelPress = () => {
+      if (pressTimer) {
+        clearTimeout(pressTimer)
+        pressTimer = null
+      }
+    }
+
+    addListener(this.el, "dblclick", dblClickHandler)
+    addListener(this.el, "pointerdown", pointerDownHandler)
+    addListener(this.el, "pointerup", cancelPress)
+    addListener(this.el, "pointercancel", cancelPress)
+    addListener(this.el, "pointerleave", cancelPress)
+    addListener(this.el, "pointermove", pointerMoveHandler)
+
     addListener(this.el, "dragstart", dragStartHandler)
     addListener(this.el, "dragend", dragEndHandler)
     addListener(todoContainer, "dragover", dragOverHandler)
     addListener(todoContainer, "drop", dropHandler)
 
-    const isEditing = this.el.classList.contains("cursor-not-allowed")
+    const isEditing = !this.el.classList.contains("cursor-grab")
     // Set the draggable property reliably
     this.el.draggable = !isEditing
   }
