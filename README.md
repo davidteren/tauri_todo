@@ -9,15 +9,11 @@ This repository is a small, learning-focused example showing how to combine Elix
 - Simple build scripts to go from Phoenix app → Desktop app
 - Agent-assisted workflows that helped iterate faster
 
-## Demo video
+## Demo
 
-> GitHub markdown sanitizes inline HTML video tags in READMEs, so embedded players usually won’t render. The most reliable approach is a clickable thumbnail that opens the video.
-
-[![Click to watch the demo](screenshots/screenshot.png)](screenshots/video.mp4)
+![Demo](screenshots/demo.gif)
 
 Description: A short walkthrough that shows starting the Phoenix app, building the Tauri desktop bundle, and interacting with the LiveView UI (adding/reordering/completing items). It highlights how the Phoenix server runs locally as a sidecar and how the desktop app stays fully offline-first.
-
-- Direct link (may open your browser’s player): [screenshots/video.mp4](screenshots/video.mp4?raw=1)
 
 ## Quick start (development)
 
