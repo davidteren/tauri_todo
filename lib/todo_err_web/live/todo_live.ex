@@ -19,6 +19,33 @@ defmodule TodoErrWeb.TodoLive do
     {:ok, socket}
   end
 
+  defp compact_title(description) when is_binary(description) do
+    description
+    |> String.split("\n")
+    |> Enum.at(0, "")
+    |> String.trim()
+    |> then(fn line ->
+      line
+      |> String.replace(~r/^\s*>\s*/, "")
+      |> String.replace(~r/^\s*#+\s*/, "")
+      |> String.replace(~r/!\[[^\]]*\]\([^)]*\)/, fn m ->
+        # convert images to their alt text
+        Regex.run(~r/!\[([^\]]*)\]/, m, capture: :all_but_first) |> List.first() || ""
+      end)
+      |> String.replace(~r/\[([^\]]+)\]\([^)]*\)/, "\\1")
+      |> String.replace(~r/`([^`]*)`/, "\\1")
+      |> String.replace(~r/\*\*([^*]+)\*\*/, "\\1")
+      |> String.replace(~r/\*([^*]+)\*/, "\\1")
+      |> String.replace(~r/__([^_]+)__/, "\\1")
+      |> String.replace(~r/_([^_]+)_/, "\\1")
+      |> String.trim()
+    end)
+    |> case do
+      "" -> "Untitled"
+      other -> other
+    end
+  end
+
   @impl true
   def handle_event("add_todo", %{"description" => description}, socket) do
     # Trim each line individually while preserving newlines
@@ -263,7 +290,7 @@ defmodule TodoErrWeb.TodoLive do
               </form>
             </div>
           <% else %>
-            <% title = @todo.description |> String.split("\n") |> Enum.at(0, "") |> String.trim() %>
+            <% title = compact_title(@todo.description) %>
             <div class="space-y-1">
               <button
                 type="button"
@@ -275,6 +302,8 @@ defmodule TodoErrWeb.TodoLive do
                   if(@expanded_id == @todo.id, do: "hidden", else: "block hover-hide")
                 ]}
                 title={title}
+                data-compact-title={title}
+                data-raw-first-line={@todo.description |> String.split("\n") |> Enum.at(0, "")}
               >
                 <%= title %>
               </button>

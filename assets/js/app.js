@@ -14,6 +14,29 @@ Hooks.MarkdownEditor = {
     this.setupEditor()
   },
 
+  stripMarkdownTitle(text) {
+    if (!text) return ''
+    // Remove blockquote and leading hashes
+    let t = text
+      .replace(/^\s*>\s*/, '')
+      .replace(/^\s*#+\s*/, '')
+    // Replace image with its alt text
+    t = t.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (m) => {
+      const m2 = m.match(/!\[([^\]]*)\]/)
+      return m2 && m2[1] ? m2[1] : ''
+    })
+    // Links -> text
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
+    // Inline code -> plain
+    t = t.replace(/`([^`]+)`/g, '$1')
+    // Bold / italic variants
+    t = t.replace(/\*\*([^*]+)\*\*/g, '$1')
+    t = t.replace(/\*([^*]+)\*/g, '$1')
+    t = t.replace(/__([^_]+)__/g, '$1')
+    t = t.replace(/_([^_]+)_/g, '$1')
+    return t.trim()
+  },
+
   updated() {
     this.setupEditor()
   },
@@ -69,8 +92,14 @@ Hooks.MarkdownRenderer = {
     const p = this.el.querySelector('p')
     const raw = this.el.dataset.raw || (p ? p.textContent : this.el.textContent) || ''
     const safe = this.escapeHTML(raw)
-    const html = this.parseMarkdown(safe)
-    this.el.innerHTML = html
+
+    const lines = safe.split('\n')
+    const first = (lines.shift() || '').trim()
+    const title = this.stripMarkdownTitle(first)
+    const body = lines.join('\n')
+    const bodyHtml = this.parseMarkdown(body)
+    const headerHtml = title ? `<h1>${title}</h1>` : ''
+    this.el.innerHTML = headerHtml + bodyHtml
   },
 
   escapeHTML(text) {
@@ -80,6 +109,24 @@ Hooks.MarkdownRenderer = {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
+  },
+
+  stripMarkdownTitle(text) {
+    if (!text) return ''
+    let t = text
+      .replace(/^\s*>\s*/, '')
+      .replace(/^\s*#+\s*/, '')
+    t = t.replace(/!\[[^\]]*\]\(([^)]+)\)/g, (m) => {
+      const m2 = m.match(/!\[([^\]]*)\]/)
+      return m2 && m2[1] ? m2[1] : ''
+    })
+    t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
+    t = t.replace(/`([^`]+)`/g, '$1')
+    t = t.replace(/\*\*([^*]+)\*\*/g, '$1')
+    t = t.replace(/\*([^*]+)\*/g, '$1')
+    t = t.replace(/__([^_]+)__/g, '$1')
+    t = t.replace(/_([^_]+)_/g, '$1')
+    return t.trim()
   },
 
   parseMarkdown(text) {
