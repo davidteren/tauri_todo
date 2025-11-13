@@ -44,13 +44,14 @@ Hooks.MarkdownEditor = {
     }
 
     // Save references for cleanup
-    this.textarea = textarea
-    this._resizeHandler = () => autosize(textarea)
-
+    if (this._resizeHandler && this.textarea) {
+      this.textarea.removeEventListener('input', this._resizeHandler);
+    }
+    this.textarea = textarea;
+    this._resizeHandler = () => autosize(textarea);
     // Initialize and bind
-    autosize(textarea)
-    textarea.removeEventListener('input', this._resizeHandler)
-    textarea.addEventListener('input', this._resizeHandler)
+    autosize(textarea);
+    this.textarea.addEventListener('input', this._resizeHandler);
   }
 }
 
@@ -148,6 +149,7 @@ Hooks.DragDrop = {
     }
 
     const listeners = []
+    let hoverTimer = null
 
     const addListener = (element, event, handler) => {
       if (element) {
@@ -163,7 +165,22 @@ Hooks.DragDrop = {
       listeners.length = 0
     }
 
-    this.dragCleanup = removeListeners
+    const setHoverExpanded = (expanded) => {
+      if (expanded) {
+        this.el.setAttribute('data-hover-expanded', 'true')
+      } else {
+        this.el.setAttribute('data-hover-expanded', 'false')
+      }
+    }
+
+    this.dragCleanup = () => {
+      removeListeners()
+      if (hoverTimer) {
+        clearTimeout(hoverTimer)
+        hoverTimer = null
+      }
+      setHoverExpanded(false)
+    }
 
     const getDragAfterElement = (container, y) => {
       const draggableElements = Array.from(container.querySelectorAll("[data-todo-id]:not(.opacity-50)"))
@@ -192,6 +209,8 @@ Hooks.DragDrop = {
       this.el.classList.add("opacity-50", "scale-95", "shadow-lg")
       placeholder = createPlaceholder()
       document.body.classList.add("dragging")
+      if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null }
+      setHoverExpanded(false)
     }
 
     const dragEndHandler = (_e) => {
@@ -236,6 +255,25 @@ Hooks.DragDrop = {
       console.log("Reordering todos:", todoIds)
       this.pushEvent("reorder_todos", { todo_ids: todoIds })
     }
+
+    // Delayed hover expansion
+    const hoverDelay = parseInt(this.el.getAttribute('data-hover-delay') || '600', 10)
+    // initialize collapsed
+    setHoverExpanded(false)
+    const pointerEnterHandler = () => {
+      if (hoverTimer) clearTimeout(hoverTimer)
+      hoverTimer = setTimeout(() => setHoverExpanded(true), isNaN(hoverDelay) ? 600 : hoverDelay)
+    }
+    const pointerLeaveHandler = () => {
+      if (hoverTimer) {
+        clearTimeout(hoverTimer)
+        hoverTimer = null
+      }
+      setHoverExpanded(false)
+    }
+
+    addListener(this.el, "pointerenter", pointerEnterHandler)
+    addListener(this.el, "pointerleave", pointerLeaveHandler)
 
     addListener(this.el, "dragstart", dragStartHandler)
     addListener(this.el, "dragend", dragEndHandler)

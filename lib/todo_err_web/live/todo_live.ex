@@ -217,6 +217,8 @@ defmodule TodoErrWeb.TodoLive do
         if(@editing_id == @todo.id, do: "", else: "cursor-grab active:cursor-grabbing")
       ]}
       data-todo-id={@todo.id}
+      data-hover-delay="600"
+      data-hover-expanded="false"
       phx-hook="DragDrop"
     >
       <div class="flex items-center gap-4 p-5">
@@ -281,7 +283,7 @@ defmodule TodoErrWeb.TodoLive do
             <div class="space-y-1">
               <div class={[
                 "flex items-center gap-2",
-                if(@expanded_id == @todo.id, do: "flex", else: "hidden group-hover:flex")
+                if(@expanded_id == @todo.id, do: "", else: "hover-reveal")
               ]}>
                 <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">Markdown</span>
                 <button
@@ -299,14 +301,13 @@ defmodule TodoErrWeb.TodoLive do
                 class={[
                   "w-full text-left text-base font-medium transition-all overflow-hidden whitespace-nowrap text-ellipsis",
                   if(@todo.completed, do: "line-through text-gray-400", else: "text-gray-950"),
-                  if(@expanded_id == @todo.id, do: "hidden", else: "block"),
-                  "group-hover:hidden"
+                  if(@expanded_id == @todo.id, do: "hidden", else: "block hover-hide")
                 ]}
                 title={title}
               >
                 <%= title %>
               </button>
-              <div id={"todo-#{@todo.id}-markdown"} class={["markdown-content", if(@expanded_id == @todo.id, do: "block", else: "hidden group-hover:block")]} phx-hook="MarkdownRenderer">
+              <div id={"todo-#{@todo.id}-markdown"} class={["markdown-content", if(@expanded_id == @todo.id, do: "block", else: "hidden hover-reveal-block")]} phx-hook="MarkdownRenderer">
                 <p class={[
                   "text-base font-medium transition-all whitespace-pre-wrap",
                   if(@todo.completed,

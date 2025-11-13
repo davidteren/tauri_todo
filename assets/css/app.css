@@ -254,3 +254,14 @@ body.dragging * {
   font-size: 0.875rem; /* text-sm */
   line-height: 1.25rem;
 }
+
+/* Delayed hover expansion helpers */
+/* Default hidden for revealers */
+.hover-reveal { display: none; }
+.hover-reveal-block { display: none; }
+.hover-hide { display: block; }
+
+/* When container sets data-hover-expanded=true, show revealers */
+[data-hover-expanded="true"] .hover-reveal { display: flex; }
+[data-hover-expanded="true"] .hover-reveal-block { display: block; }
+[data-hover-expanded="true"] .hover-hide { display: none; }
