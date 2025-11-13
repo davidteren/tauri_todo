@@ -12,6 +12,8 @@ defmodule TodoErr.Application do
       ensure_database_directory()
     end
 
+    run_migrations()
+
     children = [
       TodoErrWeb.Telemetry,
       TodoErr.Repo,

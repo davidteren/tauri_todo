@@ -138,6 +138,19 @@ defmodule TodoErrWeb.TodoLive do
   end
 
   @impl true
+  def handle_event("complete_yesterday", %{"id" => id}, socket) do
+    todo = Todos.get_todo!(id)
+
+    case Todos.complete_yesterday(todo) do
+      {:ok, _todo} ->
+        {:noreply, refresh_todos(socket)}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to mark as completed yesterday")}
+    end
+  end
+
+  @impl true
   def handle_event("start_edit", %{"id" => id}, socket) do
     {:noreply, assign(socket, :editing_id, String.to_integer(id))}
   end
@@ -336,6 +349,16 @@ defmodule TodoErrWeb.TodoLive do
             title={if @todo.blocked, do: "Unblock", else: "Mark as blocked"}
           >
             <.icon name="hero-exclamation-triangle" class="w-5 h-5" />
+          </button>
+
+          <!-- Mark Completed Yesterday Button -->
+          <button
+            phx-click="complete_yesterday"
+            phx-value-id={@todo.id}
+            class="flex-shrink-0 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+            title="Mark as completed yesterday"
+          >
+            <.icon name="hero-calendar" class="w-5 h-5" />
           </button>
 
           <!-- Delete Button -->

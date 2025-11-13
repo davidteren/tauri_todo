@@ -117,6 +117,15 @@ defmodule TodoErr.Todos do
     |> Repo.update()
   end
 
+  def complete_yesterday(%Todo{} = todo) do
+    yesterday =
+      DateTime.utc_now()
+      |> DateTime.add(-86_400, :second)
+      |> DateTime.truncate(:second)
+
+    update_todo(todo, %{completed: true, completed_at: yesterday})
+  end
+
   @doc """
   Reorders todos based on a list of todo IDs in the new order.
   Updates the position field for all affected todos.
