@@ -1,137 +1,85 @@
-# TodoErr
+# Elixir + Phoenix + Tauri – Desktop App Example
 
-A beautiful, modern task management application built with Phoenix LiveView and packaged as a desktop app using Tauri.
+This repository is a small, learning-focused example showing how to combine Elixir/Phoenix (LiveView) with Tauri to ship a native desktop app. It is not a product and not intended for production. Use it to experiment, learn, and understand the moving parts.
 
-> **Note:** Currently supports **macOS only** (Apple Silicon & Intel). Windows and Linux support coming soon.
+• What this demonstrates
+- Running a Phoenix server as a Tauri sidecar process
+- Using LiveView for the UI and Ecto + SQLite for local data
+- Packaging everything into a native macOS app with Tauri
+- Simple build scripts to go from Phoenix app → Desktop app
+- Agent-assisted workflows that helped iterate faster
 
-![TodoErr App Screenshot](screenshots/screenshot.png)
+## Demo video
 
-## Features
+<video src="screenshots/video.mp4" controls width="800" poster="screenshots/screenshot.png">
+  Your browser does not support the video tag. You can download and watch it here:
+  <a href="screenshots/video.mp4">screenshots/video.mp4</a>
+</video>
 
-- ✅ Add, complete, and delete tasks
-- ✅ Real-time updates with Phoenix LiveView
-- ✅ Modern glassmorphic UI with cyan/teal color scheme
-- ✅ SQLite database for local storage
-- ✅ Native desktop app for macOS (via Tauri v2)
-- ✅ Offline-first architecture
+Description: A short walkthrough that shows starting the Phoenix app, building the Tauri desktop bundle, and interacting with the LiveView UI (adding/reordering/completing items). It highlights how the Phoenix server runs locally as a sidecar and how the desktop app stays fully offline-first.
 
-## Development
+## Quick start (development)
 
-### Prerequisites
+Prerequisites
+- Elixir and Erlang/OTP
+- Node.js (for assets)
+- Rust toolchain (for Tauri)
 
-- Elixir 1.14+ and Erlang/OTP 25+
-- Node.js 18+ (for asset compilation)
-- Rust 1.70+ (for Tauri desktop app)
+Steps
+1) Install Elixir deps and set up the project
+   mix setup
 
-### Running the Phoenix Server
+2) Start Phoenix (browser/dev mode)
+   mix phx.server
 
-```bash
-# Install dependencies
-mix setup
+Visit http://localhost:4000 in your browser.
 
-# Start the Phoenix server
-mix phx.server
-```
+## Build and run the desktop app (macOS)
 
-Visit [`localhost:4000`](http://localhost:4000) in your browser.
+The scripts handle building assets, creating a Phoenix release, and packaging the Tauri app.
 
-### Building the Desktop App
+- Full clean build (first time or after major changes)
+  ./scripts/build_and_run.sh
 
-```bash
-# Full clean build (recommended for first build or after major changes)
-./scripts/build_and_run.sh
+- Fast incremental build (iterating)
+  ./scripts/build_and_run.sh --fast
 
-# Fast incremental build (much faster, good for iterating)
-./scripts/build_and_run.sh --fast
+Notes
+- macOS only in this example. You can adapt to Windows/Linux with Tauri, but this repo focuses on the learning flow, not cross-platform packaging.
+- The scripts will create the app inside src-tauri/target/release/bundle/macos/.
 
-# Build without opening the app
-./scripts/build_and_run.sh --no-open
+## How it works (high level)
 
-# Fast build without opening
-./scripts/build_and_run.sh --fast --no-open
-```
+- Phoenix app: Regular Phoenix + LiveView app that serves the UI and uses SQLite via Ecto for local storage.
+- Tauri sidecar: Tauri launches the Phoenix release locally, then the webview points to the local server (localhost). The app stays fully local.
+- Security/ports: The Phoenix server binds to localhost only. For desktop builds, a fixed port is used.
+- Assets: Built with esbuild + Tailwind (v4). Assets are compiled before packaging so the desktop app has everything it needs.
 
-**Build Modes:**
-- **Full clean build** (default): Cleans all caches, ~2-3 minutes
-- **Fast build** (`--fast`): Incremental build, ~30-60 seconds
+## Why this repo exists
 
-The desktop app will be available at:
-- `src-tauri/target/release/bundle/macos/TodoErr.app`
-- `src-tauri/target/release/bundle/dmg/TodoErr_0.1.0_aarch64.dmg`
+- To learn how Elixir/Phoenix fits into a native desktop workflow
+- To experiment with Tauri and LiveView together
+- To try agent-assisted workflows as part of the coding process
+- To keep things simple and understandable for newcomers
 
-## Tech Stack
+## Repo structure (minimal)
 
-- **Backend**: Phoenix 1.8, Elixir
-- **Frontend**: Phoenix LiveView, Tailwind CSS v4
-- **Database**: SQLite (via Ecto)
-- **Desktop**: Tauri v2
-- **Asset Pipeline**: esbuild
+- lib/ … Phoenix app code (contexts, LiveView, components)
+- assets/ … JS/CSS assets bundled for Phoenix
+- priv/ … static files and Ecto migrations
+- src-tauri/ … Tauri config, Rust bootstrap code, icons
+- scripts/ … helper scripts to build and run the desktop app
 
-## Project Structure
+## Not production-ready
 
-```
-todo_err/
-├── lib/
-│   ├── todo_err/           # Business logic
-│   └── todo_err_web/       # Web interface (LiveView)
-├── assets/                 # Frontend assets (JS, CSS)
-├── priv/                   # Static files and migrations
-├── src-tauri/             # Tauri desktop app
-└── scripts/               # Build and deployment scripts
-```
+This is a teaching resource, not a hardened product. If you want to move toward production, consider:
+- Signing/notarizing artifacts (macOS), auto-updates, and cross-platform CI
+- Release-time configuration hardening, logs/telemetry, and migration strategies
+- Thorough testing and UX polish
 
-## Platform Support
+## Learn more
 
-| Platform | Status | Architecture |
-|----------|--------|--------------|
-| macOS    | ✅ Supported | Apple Silicon (M1/M2/M3) & Intel |
-| Windows  | 🚧 Coming Soon | - |
-| Linux    | 🚧 Coming Soon | - |
-
-## Documentation
-
-- [Cache Busting Strategy](CACHE_BUSTING.md) - How we handle caching and ensure fresh builds
-- [AI Agent Guidelines](AGENTS.md) - Development guidelines for AI assistants
-
-## Troubleshooting
-
-### Build Issues
-
-If you encounter build issues:
-
-1. **Try a full clean build:**
-   ```bash
-   ./scripts/build_and_run.sh
-   ```
-
-2. **If Erlang node conflicts occur:**
-   ```bash
-   killall -9 beam.smp epmd
-   epmd -kill
-   ```
-
-3. **Clear all caches manually:**
-   ```bash
-   rm -rf _build/prod
-   rm -rf priv/static/assets
-   rm -rf src-tauri/target
-   cd src-tauri && cargo clean && cd ..
-   ```
-
-### App Won't Start
-
-Check the logs:
-```bash
-tail -f ~/Library/Logs/com.todoerr.desktop/TodoErr.log
-```
-
-## Learn More
-
-- **Phoenix Framework:** https://www.phoenixframework.org/
-- **Tauri:** https://tauri.app/
-- **Tailwind CSS:** https://tailwindcss.com/
-- **Phoenix LiveView:** https://hexdocs.pm/phoenix_live_view/
-
-## License
-
-This project is open source and available under the MIT License.
+- Phoenix: https://www.phoenixframework.org/
+- Phoenix LiveView: https://hexdocs.pm/phoenix_live_view/
+- Tauri: https://tauri.app/
+- Tailwind CSS: https://tailwindcss.com/
