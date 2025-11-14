@@ -11,9 +11,10 @@ This repository is a small, learning-focused example showing how to combine Elix
 
 ## Demo
 
-![Demo](screenshots/demo_v3_12fps_720w_hq.gif)
+![Demo](screenshots/demo_tiny_8fps_480w_128c.gif)
 
-[Small video version (MP4)](screenshots/video.mp4)
+- Higher-quality GIF (may not preview on GitHub due to size): [screenshots/demo_v3_12fps_720w_hq.gif](screenshots/demo_v3_12fps_720w_hq.gif)
+- [Small video version (MP4)](screenshots/video.mp4)
 
 Description: A short walkthrough that shows starting the Phoenix app, building the Tauri desktop bundle, and interacting with the LiveView UI (adding/reordering/completing items). It highlights how the Phoenix server runs locally as a sidecar and how the desktop app stays fully offline-first.
 
